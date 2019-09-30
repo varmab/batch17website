@@ -3,7 +3,79 @@ import React, { Component } from 'react'
 
 
 class Contact extends Component {
+    constructor(){
+        super();
+
+        this.state={
+            user:{
+                name:'',
+                email:'',
+                message:'',
+            },
+
+            touched:{
+                name:false,
+                email:false,
+                message:false
+            }
+        }
+    }
+
+    onChange=(e)=>{
+       const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+       
+       const user = Object.assign({}, this.state.user);
+       user[e.target.name] = value;
+
+       this.setState({
+            user
+       })
+    }
+
+    onBlur=(e)=>{
+        let touched = Object.assign({}, this.state.touched);
+        touched[e.target.name] = true;
+        this.setState({
+            touched
+        })
+    }
+
+    validate=()=>{
+        const errors = {};
+        const {user} = this.state;
+
+        if(!user.name){
+            errors.name = 'Name is requried';
+        }
+
+        if(!user.email){
+            errors.email = 'Email is requried';
+        }
+        
+        if(!user.message){
+            errors.message = 'Message is requried';
+        }
+        
+
+        return{
+            errors,
+            isValid: Object.keys(errors).length === 0
+        };
+    }
+
+    onSubmit=(e)=>{
+        e.preventDefaultSubmit();
+
+
+
+    }
+
+
+
     render() {
+        const {user, touched} = this.state;
+        const {errors, isValid} = this.validate();
+
         return (
             <section className="contacts-3 bg-clouds">
                 <div className="container">
@@ -32,13 +104,16 @@ class Contact extends Component {
                             <h3>Email us</h3>
                             <p>Want to reach us by email, Send us a quick message by filling form below.</p>
                             <form>
-                                <label className="h6">Name / Last Name</label>
-                                <input type="text" className="form-control" />
+                                <label className="h6">Name</label>
+                                <input type="text" className="form-control" name="name" onChange={this.onChange} onBlur={this.onBlur} />
+                                {touched.name && !!errors.name && <span style={{color:"red"}}>{errors.name}<br/></span>}
                                 <label className="h6">E-mail</label>
-                                <input type="text" className="form-control" />
+                                <input type="text" className="form-control" name="email" onChange={this.onChange} onBlur={this.onBlur} />
+                                {touched.email && !!errors.email && <span style={{color:"red"}}>{errors.email}<br/></span>}
                                 <label className="h6">Message</label>
-                                <textarea rows="7" className="form-control"></textarea>
-                                <button type="submit" className="btn btn-primary"><span className="fui-mail"></span></button>
+                                <textarea rows="7" className="form-control" name="message" onChange={this.onChange} onBlur={this.onBlur}></textarea>
+                                {touched.message && !!errors.message && <span style={{color:"red"}}>{errors.message}<br/></span>}
+                                <button onClick={this.onSubmit} className="btn btn-primary" disabled={!isValid}><span className="fui-mail" ></span></button>
                             </form>
                         </div>
                     </div>
